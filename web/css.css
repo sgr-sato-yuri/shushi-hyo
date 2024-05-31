@@ -1,0 +1,130 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+body{
+    overflow-x: hidden;
+}
+a{
+    display: none;
+}
+/*menubar*/
+.menu{
+    background-color: #aaa;
+    height: 30px;
+    line-height: 30px;
+    display: flex;
+}
+.menu > h1{
+    width: 40%;
+    text-align: center;
+    font-size: 16px;
+    color: #333;
+    list-style: none;
+    padding: 0 20px;
+    margin: 0 1px;
+    cursor: default;
+    border-radius: 10px 10px 0 0;
+    background-color: #ccc;
+}
+.menu > h2{
+    width: 20%;
+    text-align: center;
+    font-size: 16px;
+    color: #333;
+    list-style: none;
+    padding: 0 20px;
+    margin: 0 1px;
+    cursor: default;
+    border-radius: 10px 10px 0 0;
+    background-color: #ccc;
+}
+#input{
+    background-color: #eee;
+}
+
+/*main-input*/
+form{
+    margin-left: 5%;
+}
+
+#in-date, #in-income, #in-spend{
+    width: 13%;
+}
+#in-item, #in-star{
+    width: 15%;
+}
+#table{
+    width: 90%;
+    table-layout: fixed;
+    margin: auto;
+}
+table, tr, th, td{
+    border: 1px solid #aaa;
+    border-collapse: collapse;
+}
+    /*id*/
+#id{
+    width: 5%;
+    text-align: center;
+}
+    /*カテゴリ*/
+.category{
+    text-align: center;
+}
+    /*収入支出合計*/
+.income, .spend, .total {
+    text-align: right;
+}
+/*編集ボタン*/
+.edits{
+    text-align: center;
+}
+#edit-date, #edit-item, #edit-income, #edit-spend{
+    width: 85%;
+}
+
+/*main-graph*/
+#childchart{
+    display: none;
+}
+.wrap{
+    display: flex;
+}
+#chart-table{
+    width: 90%;
+    margin-left: 10px;
+    table-layout: fixed;
+}
+.chartcontainer{
+    width: 90%;
+    height: auto;
+    margin: auto;
+}
+#update{
+    margin: 20px;
+}
+/*main-そのた*/
+#childother{
+    margin-left: 10px;
+    display: none;
+}
+h1{
+    font-size: medium;
+}
+.setted{
+    display: flex;
+    margin: 10px;
+}
+#setted-category{
+    width: 150px;
+    margin-right: 10px;
+    cursor: default;
+    border: 1px solid #333;
+    border-radius: 3%;
+}
+.categorysetting{
+    width: 90%;
+    margin: auto;
+    border-bottom: 1px solid #aaa;
+}
