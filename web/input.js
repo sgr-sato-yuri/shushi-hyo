@@ -7,8 +7,8 @@ const fields = ["id", "date", "item", "category", "income", "spend"];
 const fd = {};
 const table = document.getElementById("table");
 const trows = document.getElementsByClassName("trow");
-const editbtns = document.getElementsByClassName("edit");
 const removebtns = document.getElementsByClassName("remove");
+const editbtns = document.getElementsByClassName("edit");
 const spenddata = [];
 
 var categories = [];
@@ -43,10 +43,11 @@ menubar.forEach(x => {
     }
 });
 
-//todayから年を外してmm/ddに変換
+//todayから年を外してmm-ddに変換
+var getyear = (today.getFullYear()).toString();
 var getmonth = (today.getMonth() + 1).toString().padStart(2,"0");
 var getdate = (today.getDate()).toString().padStart(2,"0");
-today = `${getmonth}/${getdate}`
+today = `${getyear}-${getmonth}-${getdate}`;
 
 //totalの計算
 function calctotal(){
@@ -123,8 +124,7 @@ function newrow(form){
     editcell.appendChild(document.createTextNode("|"));
     editcell.appendChild(deleteButton);
     calctotal();
-    assigneditfunc();
-    assignremovefunc();
+    assignfunc();
 }
 
 //フォーム送信
@@ -147,8 +147,8 @@ submitbtn.addEventListener("click", async (e) => {
     if(income.value !== "" || spend.value !== ""){
         try {
             var back = await eel.test_py(fd)();
+            fd["id"] = back;
             newrow(fd);
-            console.log(back);
             //後処理
             for(const key in fd){
                 if(fd.hasOwnProperty(key)){
@@ -169,65 +169,71 @@ submitbtn.addEventListener("click", async (e) => {
 })
 
 //編集
-function assigneditfunc(){
+function assignfunc(){
     for(let i=0; i<editbtns.length; i++){
-        editbtns[i].addEventListener("click", () => {
-            console.log("edit mode");
-            var editcell = editbtns[i].parentNode;
-            let createupdatebtn = document.createElement("button");
-            createupdatebtn.className = "update";
-            createupdatebtn.textContent = "更新";
-            editcell.innerHTML = "";
-            editcell.appendChild(createupdatebtn);
-            var updatebtn = document.getElementsByClassName("update");
-            var editrow = editcell.parentNode;
-            var index = editrow.rowIndex;
-            var unique = editrow.children[0].innerText;
-    
-            var n = 0;
-            fields.forEach(x => {
-                var val = editrow.children[n].innerText;
-                if(x!=="category" && x!=="id"){
-                    const input = document.createElement("input");
-                    input.className = x;
-                    input.id = `edit-${x}`;
-                    switch (x) {
-                        case "date":
-                            input.type = "date";
-                            break;
-                        case "income":
-                        case "spend":
-                            input.type = "number";
-                        default:
-                            break;
-                    }
-                    input.value = val;
-                    editrow.children[n].appendChild(input);    
-                }else if(x==="category"){
-                    console.log("add category");
-                    var indexnum = categories.indexOf(val);
-                    const select = document.createElement("select");
-                    select.id = `edit-${x}`;
-                    categories.forEach(y => {
-                        var option = document.createElement("option");
-                        option.innerText = y;
-                        select.appendChild(option);
-                    })
-                    if(select.options[indexnum]){
-                        select.options[indexnum].selected = true;
-                    }
-                    editrow.children[n].appendChild(select);
-                }
-                n++;
-            })
-            if(updatebtn[0]){
-                updatebtn[0].addEventListener("click", () => {
-                    console.log(editindex);
-                    update(index, unique);
-                })
+        editbtns[i].removeEventListener("click", editfunc)
+        editbtns[i].addEventListener("click", editfunc, {once: true})
+    }
+    for(let i=0; i<removebtns.length; i++){
+        removebtns[i].removeEventListener("click", removefunc);
+        removebtns[i].addEventListener("click", removefunc, {once: true});        
+    }
+}
+function editfunc(e){
+    var btn = e.currentTarget;
+    var editcell = btn.parentNode;
+    let createupdatebtn = document.createElement("button");
+    createupdatebtn.className = "update";
+    createupdatebtn.textContent = "更新";
+    editcell.innerHTML = "";
+    editcell.appendChild(createupdatebtn);
+    var updatebtn = document.getElementsByClassName("update");
+    var editrow = editcell.parentNode;
+    var rowindex = editrow.rowIndex;
+    var uniqueid = editrow.children[0].innerText;
+
+    var n = 0;
+    fields.forEach(x => {
+        var val = editrow.children[n].innerText;
+        if(x!=="category" && x!=="id"){
+            const input = document.createElement("input");
+            input.className = x;
+            input.id = `edit-${x}`;
+            switch (x) {
+                case "date":
+                    input.type = "date";
+                    break;
+                case "income":
+                case "spend":
+                    input.type = "number";
+                default:
+                    break;
             }
+            input.value = val;
+            editrow.children[n].appendChild(input);    
+        }else if(x==="category"){
+            var indexnum = categories.indexOf(val);
+            const select = document.createElement("select");
+            select.id = `edit-${x}`;
+            categories.forEach(y => {
+                var option = document.createElement("option");
+                option.innerText = y;
+                select.appendChild(option);
+            })
+            if(select.options[indexnum]){
+                select.options[indexnum].selected = true;
+            }
+            editrow.children[n].appendChild(select);
+        }
+        n++;
+    })
+    if(updatebtn[0]){
+        updatebtn[0].addEventListener("click", () => {
+            update(rowindex, uniqueid);
         })
     }
+    calctotal();
+    calctotaltable();
 }
 
 //更新
@@ -243,12 +249,10 @@ async function update(index, unique) {
     fd["category"] = UPcategory.value;
     fd["income"] = UPincome.value;
     fd["spend"] = UPspend.value;
-    console.log(fd);
 
     if(UPincome.value !== "" || UPspend.value !== ""){
         try {
             var back = await eel.update_py(unique,fd)();
-            console.log(back);
             //DOM操作
             var n = 1;
             fields.forEach(x => {
@@ -277,6 +281,7 @@ async function update(index, unique) {
             editcell.appendChild(document.createTextNode("|"));
             editcell.appendChild(deleteButton);
             calctotal();
+            calctotaltable();
         } catch (err) {
             console.error(err);
         }    
@@ -284,26 +289,23 @@ async function update(index, unique) {
 }
 
 //削除
-async function assignremovefunc(){
-    for(let i=0; i<removebtns.length; i++){
-        removebtns[i].addEventListener("click", async () => {
-            var removecell = removebtns[i].parentNode;
-            var removerow = removecell.parentNode;
-            var index = removerow.rowIndex
-            console.log(index);
-            var check = window.confirm("このレコードを削除しますか？");
-            if(check === true){
-                removerow.remove();
-                var back5 = await eel.removerow_py(index)();
-                console.log(back5)
-                calctotal();
-                calctotaltable();          
-            }
-        });        
+async function removefunc(e){
+    var btn = e.currentTarget;
+    var removecell = btn.parentNode;
+    var removerow = removecell.parentNode;
+    var index = removerow.rowIndex
+    console.log(index);
+    var check = window.confirm("このレコードを削除しますか？");
+    if(check === true){
+        removerow.remove();
+        var back5 = await eel.removerow_py(index)();
+        console.log(back5);
+        calctotal();
+        calctotaltable();          
     }
 }
 
-//graph
+//chart
 const updatebtn = document.getElementById("update");
 const totaltable = document.getElementById("chart-table");
 let chart;
@@ -312,6 +314,7 @@ async function calctotaltable(){
     var back3 = await eel.totaleachcategory_py(categories)();
     var count = 1;
     categories.forEach(x => {
+        //rowが存在するとき
         if(totaltable.rows[count] && totaltable.rows[count].cells[0].innerText === x){
             totaltable.rows[count].cells[0].innerText = x;
             var totalincome = back3[x]["income"];
@@ -349,26 +352,34 @@ async function calctotaltable(){
             cell.appendChild(document.createTextNode(val));
         }
     })
+    var back4 = await eel.totalspendandincome()();
+    var totalincome = back4[0];
+    var totalspend = back4[1];
+    var total = totalincome - totalspend;
     if(totaltable.rows[count].cells[0].innerText !== "総計"){
         //合計行
         var row = totaltable.insertRow();
         var cell = row.insertCell();
         var text = "総計"
         cell.appendChild(document.createTextNode(text)); 
-        var back4 = await eel.totalspendandincome()();
         cell = row.insertCell();
-        var totalincome = back4[0]
         cell.appendChild(document.createTextNode(totalincome)); 
         cell.className = "income";
         cell = row.insertCell();
-        var totalspend = back4[1]
         cell.appendChild(document.createTextNode(totalspend)); 
         cell.className = "spend";
         cell = row.insertCell();
-        var total = totalincome - totalspend
         cell.appendChild(document.createTextNode(total)); 
-        cell.className = "total";
+        cell.className = "total";    
     }
+    var row = totaltable.rows[totaltable.rows.length - 1];
+    var cell = row.cells[1];
+    cell.innerText = totalincome;
+    cell = row.cells[2];
+    cell.innerText = totalspend;
+    cell = row.cells[3];
+    cell.innerText = total;
+
     pie(categories, spenddata);
 }
 
@@ -482,8 +493,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     for(let i=0; i<back2.length; i++){
         addoption(back2[i]);
     }
-    assigneditfunc();
-    assignremovefunc();
+    assignfunc();
     assigncateoptfunc();
     calctotal();
     calctotaltable();
