@@ -15,3 +15,8 @@ SQLの学習をするために作成しました。
 - カテゴリごとの収支合計の計算
 - カテゴリの追加と削除
 - 収支データのグラフ表示（Chart.jsを使用）
+
+## 使用技術
+- フロントエンド: HTML, CSS, JavaScript (Chart.js)
+- バックエンド: Python (Eel, SQLite)
+- データベース: SQLite
