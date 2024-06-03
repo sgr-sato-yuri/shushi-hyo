@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css.css">
+    <title>shushi-hyo</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <header>
+        <div class="menu">
+            <h1 id="input">収支入力</h1>
+            <h1 id="chart">収支管理</h1>
+            <h2 id="other">そのた</h2>
+        </div>
+    </header>
+    <div class="main">
+        <div id="childinput">
+            <form class="input" name="input">
+                <input id="in-date" name="indate" type="date">
+                <input id="in-item" name="initem" placeholder="項目">
+    <!--            <input id="in-star" placeholder="備考">-->
+                <select id="in-category" name="incategory">
+                </select>
+                <input id="in-income" name="inincome" type="number" placeholder="収入">
+                <input id="in-spend" name="inspend" type="number" placeholder="支出">
+                <input id="submitbtn" type="submit" value="入力">
+            </form>
+            <table id="table">
+                <tr>
+                    <th id="id">id</th>
+                    <th id="date">日付</th>
+                    <th id="item">項目</th>
+                    <!--<th id="star">備考</th>-->
+                    <th id="category">カテゴリ</th>
+                    <th id="income">収入</th>
+                    <th id="spend">支出</th>
+                    <th id="total">合計</th>
+                    <th id="edits">編集</th>
+                </tr>
+            </table>
+        </div>
+        <div id="childchart">
+            <button id="update">更新</button>
+            <div class="wrap">
+                <table id="chart-table">
+                    <tr>
+                        <th>カテゴリ</th>
+                        <th>収入</th>
+                        <th>支出</th>
+                        <th>差異</th>
+                    </tr>
+                </table>
+                <div class="chartcontainer">
+                    <canvas id="piechart"></canvas>
+                </div>    
+            </div>
+        </div>
+        <div id="childother">
+            <h1>カテゴリ設定</h1>
+            <div class="setted">
+                <div id="setted-category">
+                </div>
+                <button id="removecate">↓削除</button>    
+            </div>
+            <input id="addcateinput">
+            <button id="addcate">↑追加</button>
+        </div>
+    <script src="eel.js"></script>
+    <script src="input.js"></script>
+    </div>
+</body>
+</html>
